@@ -74,7 +74,6 @@ class MonitorSubmission(forms.Form):
                 new_monitor.save()
             except:
                 LOGGER.exception("Error saving IP monitor from %s for %s", current_user, ip_address)
-                pass
 
     def update_monitor(self, monitor):
         """
