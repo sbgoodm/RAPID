@@ -356,7 +356,7 @@ def search_ip_for_certificate(value):
         api = CensysIPv4(api_id=settings.CENSYS_API_ID, api_secret=settings.CENSYS_API_SECRET)
         logger.info("Searching for certificate value: %s", value)
         total = 0
-        for result in api.search(query=value, fields=["ip"]):
+        for result in api.search(query=_escape_censys_value(value), fields=["ip"]):
             total += 1
             yield result["ip"]
         logger.info("Found %d total result(s) for certificate value: %s", total, value)
@@ -389,3 +389,13 @@ def accumulate_ip_for_certificate(value):
     results = list(search_ip_for_certificate(value))
     logger.info("Found %d total result(s) for certificate search value: %s", len(results), value)
     return results
+
+def _escape_censys_value(value):
+    """Escapes necessary characters for a censys search
+    """
+    escape_strings = ["+", "-", "=", "&", "|", ">", "<", "!", "(", ")",
+                      "{","}","[","]","^", "\"", "~", "*", "?", ":", "\\", "/"]
+    escape_dict = {}
+    for escape_string in escape_strings:
+        escape_dict[escape_string] = "\\" + escape_string
+    return value.translate(str.maketrans(escape_dict))
