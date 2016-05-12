@@ -51,7 +51,7 @@ class LookupException(Exception):
             raise LookupException(message, e, trace)
 
         :param message: The detail message for this exception
-        :param cause: The
+        :param cause: The exception that caused this exception, or None (the default)
         """
         super(LookupException, self).__init__()
         self._message = message
