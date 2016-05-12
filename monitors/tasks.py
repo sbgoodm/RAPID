@@ -90,6 +90,7 @@ class IndicatorLookupSubTask:
         - update_lookup: Update the lookup object.  Please refer to method documentation for a description of the
           default implementation.
     """
+    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def get_indicator_value(self, lookup):
