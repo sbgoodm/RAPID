@@ -398,4 +398,4 @@ def _escape_censys_value(value):
     escape_dict = {}
     for escape_string in escape_strings:
         escape_dict[escape_string] = "\\" + escape_string
-    escaped_value = value.translate(str.maketrans(escape_dict))
+    return value.translate(str.maketrans(escape_dict))
