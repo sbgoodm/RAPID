@@ -22,7 +22,7 @@ class WhoIsCsvWriter(CsvWriter):
 
     def create_rows(self, record):
         if record is not None:
-            date = self._get_field(record, "info_date")
-            info = self._get_field(record, "info")
+            date = record.get("info_date", None)
+            info = record.get("info", None)
             if date and info:
                 yield [date, info]
