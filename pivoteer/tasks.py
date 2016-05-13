@@ -376,7 +376,11 @@ def totalhash_ip_domain_search(indicator):
     th_logger.info("Querying Totalhash for %s" % query)
     res = th.do_search(query)
     record = th.json_response(res)  # from totalhash xml response
-    record_count = dpath.util.get(json.loads(record), "response/result/numFound")
+    try:
+        record_count = dpath.util.get(json.loads(record), "response/result/numFound")
+    except KeyError:
+        logger.info("No Totalhash data, save aborted")
+        return None
 
     if int(record_count) > 0:
         try:

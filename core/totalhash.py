@@ -76,6 +76,7 @@ import hashlib
 import hmac
 import xmltodict
 import re
+import xml
 
 
 def convert_function(p_str):
@@ -141,10 +142,14 @@ class TotalHashApi:
         opener = urllib.request.build_opener()
         # response.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE+8.0; Windows NT 5.1; Trident/4.0;)')
         data = opener.open(response).read().decode('utf-8').strip()
-        if pretty:
-            return json.dumps(fix_nested_keys(xmltodict.parse(data), convert_function), sort_keys=False, indent=4)
-        else:
-            return json.dumps(fix_nested_keys(xmltodict.parse(data), convert_function))
+        try:
+            parsed_data = xmltodict.parse(data)
+            if pretty:
+                return json.dumps(fix_nested_keys(parsed_data, convert_function), sort_keys=False, indent=4)
+            else:
+                return json.dumps(fix_nested_keys(parsed_data, convert_function))
+        except xml.parsers.expat.ExpatError:
+            return json.dumps([])
 
     def get_signature(self, query):
         return hmac.new(self.key.encode('utf-8'), msg=query.encode('utf-8'), digestmod=hashlib.sha256).hexdigest()
