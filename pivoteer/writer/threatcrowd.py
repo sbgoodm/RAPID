@@ -32,23 +32,27 @@ class ThreatCrowdCsvWriter(CsvWriter):
         info = record["info"]
         if info is None:
             return
+        response_code = info["response_code"]
+        if response_code != "1":
+            return
 
         yield ["Lookup Date", record["info_date"], None]
-        info = record["info"]
-        yield ["Permalink", info["permalink"], None]
-        emails = info["emails"]
-        yield ["Emails", ", ".join(emails), None]
-        resolutions = info["resolutions"]
+        info = record.get("info", None)
+        if not info:
+            return
+        yield ["Permalink", info.get("permalink", None), None]
+        yield ["Emails", ", ".join(info.get("emails", list())), None]
+        resolutions = info.get("resolutions", None)
         if resolutions:
             for resolution in resolutions:
-                ip = resolution["ip_address"]
-                resolved = resolution["last_resolved"]
-                yield ["Resolution", ip, resolved]
-        subdomains = info["subdomains"]
+                value = resolution.get("ip_address", None) or resolution.get("domain", None)
+                resolved = resolution.get("last_resolved", None)
+                yield ["Resolution", value, resolved]
+        subdomains = info.get("subdomains", None)
         if subdomains:
             for subdomain in subdomains:
                 yield ["Subdomain", subdomain, None]
-        hashes = info["hashes"]
+        hashes = info.get("hashes")
         if hashes:
             for h in hashes:
                 yield ["Hash", h, None]
