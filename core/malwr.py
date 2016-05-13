@@ -80,24 +80,28 @@ class MalwrApi(object):
         return token
 
 
-    def get_search_results(self, raw_result):
-        result_list = []
-        tree = html.fromstring(raw_result.content)
-        bucket_elems = tree.findall(".//div[@class='box-content']/")[0]
-        sub = bucket_elems.findall('tbody')[0]
-        for idx, submission in enumerate(sub.findall('tr'), start=0):
-            html_objs = submission.findall('td')
-            link_url = html_objs[0].xpath('//td/a')[idx].attrib['href']
-            elements = [elem.text_content().replace("\n", "").strip() for elem in html_objs]
-            objs_to_add = {
-                'submission_time': elements[0],
-                'hash': elements[1],
-                'submission_url': link_url,
-                'file_name': elements[2]
-            }
-            result_list.append(objs_to_add)
+    def get_search_results(self, raw_result, search_word):
+        try:
+            result_list = []
+            tree = html.fromstring(raw_result.content)
+            bucket_elems = tree.findall(".//div[@class='box-content']/")[0]
+            sub = bucket_elems.findall('tbody')[0]
+            for idx, submission in enumerate(sub.findall('tr'), start=0):
+                html_objs = submission.findall('td')
+                link_url = html_objs[0].xpath('//td/a')[idx].attrib['href']
+                elements = [elem.text_content().replace("\n", "").strip() for elem in html_objs]
+                objs_to_add = {
+                    'submission_time': elements[0],
+                    'hash': elements[1],
+                    'submission_url': link_url,
+                    'file_name': elements[2]
+                }
+                result_list.append(objs_to_add)
 
-        return result_list
+            return result_list
+        except IndexError as e:
+            self.logger.info ("An unexpected HTML format was returned from Malwr.com by query:" + search_word)
+            return []
 
     def search (self, search_word=None):
         if not self.logged:
@@ -112,6 +116,6 @@ class MalwrApi(object):
         raw_result = self.session.post(search_url,
                                        data=payload,
                                        headers=self.headers)
-        return self.get_search_results(raw_result)
+        return self.get_search_results(raw_result, search_word)
 
 
