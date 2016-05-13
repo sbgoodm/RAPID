@@ -128,3 +128,19 @@ class CsvWriter(Writer):
             for row in rows:
                 if row is not None:
                     self.writer.writerow(row)
+
+    @staticmethod
+    def _get_field(info, field, default=None):
+        """
+        A convenience method for retrieving a field from a dictionary and returning a default value if the key doesn't
+        exist.
+
+        :param info: The dictionary
+        :param field: The field to be retrieved
+        :param default: The default value to use if the key doesn't exist (default: None)
+        :return: The value
+        """
+        try:
+            return info[field]
+        except KeyError:
+            return default
